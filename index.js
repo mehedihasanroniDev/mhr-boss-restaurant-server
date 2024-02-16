@@ -33,18 +33,18 @@ const client = new MongoClient(uri, {
 
 
 // Deploy the server side and remove the function use only testing conent the mongodb
-// async function run() {
-//   try {
-//     // Connect the client to the server	(optional starting in v4.7)
-//
-//     // Send a ping to confirm a successful connection
-//     await client.db("admin").command({ ping: 1 });
-//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
-//   } finally {
-//     // Ensures that the client will close when you finish/error
-//   }
-// }
-// run().catch(console.dir);
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+  }
+}
+run().catch(console.dir);
 
 // Connect the client to the server
 const usersCollection = client.db('mrhBossDB').collection('users');
@@ -101,7 +101,7 @@ app.get('/users',verifyToken,verifyAdmin, async(req, res)=>{
     res.send(verifiedUser)
 })
 
-app.get('/users-stats', async(req, res)=>{
+app.get('/users-stats',verifyToken, verifyAdmin, async(req, res)=>{
     const query = {email: req.query.email}
     const menu = await menuCollection.estimatedDocumentCount()
     const reviews = await reviewsCollection.countDocuments(query)
@@ -181,7 +181,7 @@ app.get('/menu', async(req, res)=>{
     res.send(result || [])
 })
 
-app.get('/menu/:id',verifyToken, async(req, res)=>{
+app.get('/menu/:id',verifyToken, verifyAdmin, async(req, res)=>{
     const id = req.params.id
     const filter = {_id: new ObjectId(id)};
     const result = await menuCollection.findOne(filter)
